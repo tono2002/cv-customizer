@@ -12,9 +12,10 @@ interface Props {
   file: UploadedFile | null;
   onFile: (file: UploadedFile | null) => void;
   disabled?: boolean;
+  savedToProfile?: boolean;
 }
 
-export function DropZone({ id, label, hint, file, onFile, disabled }: Props) {
+export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfile }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
@@ -72,9 +73,12 @@ export function DropZone({ id, label, hint, file, onFile, disabled }: Props) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">
-        {label}
-      </label>
+      <div className="flex items-center justify-between">
+        <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
+        {savedToProfile && (
+          <span className="text-xs text-blue-600 font-medium">Saved to profile</span>
+        )}
+      </div>
 
       <div
         role="button"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { DropZone } from "./DropZone";
 import { GenerateButton } from "./GenerateButton";
 import { ModeToggle } from "./ModeToggle";
@@ -24,16 +24,70 @@ function triggerDownload(base64: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+async function saveFileToProfile(fileType: "cv" | "linkedin", file: UploadedFile) {
+  await fetch("/api/profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileType, base64: file.base64, filename: file.name }),
+  });
+}
+
+async function base64FromUrl(url: string): Promise<string> {
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+}
+
 export function CVCustomizer() {
   const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
   const [linkedinFile, setLinkedinFile] = useState<UploadedFile | null>(null);
-  const [jobOffer, setJobOffer] = useState("");
   const [mode, setMode] = useState<Mode>("cv");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<{ message: string; details?: string } | null>(null);
   const [progressStep, setProgressStep] = useState<number>(0);
   const [pdfBase64, setPdfBase64] = useState<string | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
+  // Load saved files from profile on mount
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const res = await fetch("/api/profile");
+        if (!res.ok) return;
+        const { profile } = await res.json();
+        if (!profile) return;
+
+        if (profile.cvSignedUrl && profile.cvFilename) {
+          const base64 = await base64FromUrl(profile.cvSignedUrl);
+          setCvFile({ name: profile.cvFilename, base64, mediaType: "application/pdf", sizeBytes: 0 });
+        }
+        if (profile.linkedinSignedUrl && profile.linkedinFilename) {
+          const base64 = await base64FromUrl(profile.linkedinSignedUrl);
+          setLinkedinFile({ name: profile.linkedinFilename, base64, mediaType: "application/pdf", sizeBytes: 0 });
+        }
+      } catch {
+        // Profile load failure is non-fatal — user can still upload manually
+      } finally {
+        setProfileLoading(false);
+      }
+    }
+    loadProfile();
+  }, []);
+
+  const handleCvFile = useCallback((file: UploadedFile | null) => {
+    setCvFile(file);
+    if (file) saveFileToProfile("cv", file);
+  }, []);
+
+  const handleLinkedinFile = useCallback((file: UploadedFile | null) => {
+    setLinkedinFile(file);
+    if (file) saveFileToProfile("linkedin", file);
+  }, []);
+
+  const [jobOffer, setJobOffer] = useState("");
   const canGenerate = !!cvFile && jobOffer.trim().length >= 10;
 
   const handleGenerate = useCallback(async () => {
@@ -100,7 +154,7 @@ export function CVCustomizer() {
       setError({ message });
       setStatus("error");
     }
-  }, [cvFile, linkedinFile, jobOffer]);
+  }, [cvFile, linkedinFile, jobOffer, mode]);
 
   const handleGenerateAgain = useCallback(() => {
     setStatus("idle");
@@ -122,16 +176,18 @@ export function CVCustomizer() {
               id="cv-upload"
               label="Current CV (PDF)"
               file={cvFile}
-              onFile={setCvFile}
-              disabled={isLoading}
+              onFile={handleCvFile}
+              disabled={isLoading || profileLoading}
+              savedToProfile={!profileLoading && !!cvFile}
             />
             <DropZone
               id="linkedin-upload"
               label="LinkedIn Export (PDF)"
               hint="Shorter/recent exports work best — full exports can be 10–30 pages and cost more to process."
               file={linkedinFile}
-              onFile={setLinkedinFile}
-              disabled={isLoading}
+              onFile={handleLinkedinFile}
+              disabled={isLoading || profileLoading}
+              savedToProfile={!profileLoading && !!linkedinFile}
             />
           </div>
 
@@ -169,7 +225,7 @@ export function CVCustomizer() {
 
           {isLoading && <ProgressSteps currentStep={progressStep} />}
 
-          {!cvFile && !isLoading && (
+          {!cvFile && !isLoading && !profileLoading && (
             <p className="text-center text-xs text-gray-400">
               Upload your CV and paste a job offer to get started.
             </p>
