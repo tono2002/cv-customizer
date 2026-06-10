@@ -17,18 +17,6 @@ function firstNameFromEmail(email: string | null | undefined): string {
   return first.charAt(0).toUpperCase() + first.slice(1);
 }
 
-function SparkleIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-      />
-    </svg>
-  );
-}
 
 const FREE_LIMIT = 3;
 
@@ -80,19 +68,11 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
       {/* Welcome section */}
-      <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            Welcome back, <span className="gradient-text">{greetingName}</span>
-          </h1>
-          <p className="mt-1.5 text-sm text-white/55">Here&apos;s your generation activity</p>
-        </div>
-        <Link
-          href="/app/generate"
-          className="btn-shine inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white self-start"
-        >
-          <SparkleIcon /> New Generation
-        </Link>
+      <section className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-white">
+          Welcome back, <span className="gradient-text">{greetingName}</span>
+        </h1>
+        <p className="mt-1.5 text-sm text-white/55">Here&apos;s your generation activity</p>
       </section>
 
       {/* Stats row */}
@@ -186,15 +166,6 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* Quick action */}
-      <section className="flex justify-center">
-        <Link
-          href="/app/generate"
-          className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white"
-        >
-          Start new generation -&gt;
-        </Link>
-      </section>
     </div>
   );
 }
