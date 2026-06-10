@@ -17,7 +17,7 @@ const STEPS = [
   {
     n: "02",
     title: "Paste the job offer",
-    body: "Copy the full job description from any source — LinkedIn, a company site, an email — and paste it in.",
+    body: "Copy the full job description from any source (LinkedIn, a company site, an email) and paste it in.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-6 w-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9h6m-6 4h4" />
@@ -27,7 +27,7 @@ const STEPS = [
   {
     n: "03",
     title: "Download your PDF",
-    body: "Get your tailored CV — or a matching cover letter — in seconds. Same layout, fonts, page count.",
+    body: "Get your tailored CV (or a matching cover letter) in seconds. Same layout, fonts, page count.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-6 w-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />

@@ -28,7 +28,7 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
         return;
       }
       if (raw.size > MAX_SIZE_BYTES) {
-        setWarning(`File is ${(raw.size / 1024 / 1024).toFixed(1)} MB — large files cost more to process and may be slow.`);
+        setWarning(`File is ${(raw.size / 1024 / 1024).toFixed(1)} MB. Large files cost more to process and may be slow.`);
       }
       const reader = new FileReader();
       reader.onload = () => {

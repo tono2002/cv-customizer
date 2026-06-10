@@ -17,7 +17,7 @@ export function SuccessBanner({ onGenerateAgain }: Props) {
       <div className="flex-1">
         <p className="text-sm font-medium text-green-800">Your tailored CV has been downloaded.</p>
         <p className="mt-0.5 text-xs text-green-700">
-          Want a different spin? Hit &ldquo;Generate again&rdquo; — your uploaded PDFs stay loaded.
+          Want a different spin? Hit &ldquo;Generate again&rdquo;. Your uploaded PDFs stay loaded.
         </p>
       </div>
       <button

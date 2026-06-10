@@ -24,7 +24,7 @@ const FEATURES = [
   },
   {
     title: "Cover letter mode",
-    body: "Same pipeline, one toggle — get a matching cover letter too.",
+    body: "Same pipeline, one toggle. Get a matching cover letter too.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-5 w-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -51,7 +51,7 @@ const FEATURES = [
   },
   {
     title: "Fast & affordable",
-    body: "Powered by Claude AI with prompt caching — typically under 30 seconds.",
+    body: "Powered by Claude AI with prompt caching. Typically under 30 seconds.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-5 w-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />

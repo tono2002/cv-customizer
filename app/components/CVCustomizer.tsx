@@ -150,7 +150,7 @@ export function CVCustomizer() {
         }
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Network error — please try again.";
+      const message = err instanceof Error ? err.message : "Network error. Please try again.";
       setError({ message });
       setStatus("error");
     }
@@ -183,7 +183,7 @@ export function CVCustomizer() {
             <DropZone
               id="linkedin-upload"
               label="LinkedIn Export (PDF)"
-              hint="Shorter/recent exports work best — full exports can be 10–30 pages and cost more to process."
+              hint="Shorter/recent exports work best. Full exports can be 10–30 pages and cost more to process."
               file={linkedinFile}
               onFile={handleLinkedinFile}
               disabled={isLoading || profileLoading}

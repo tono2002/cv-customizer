@@ -49,7 +49,7 @@ export default async function AppHome() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight gradient-text">CV Customizer</h1>
           <p className="mt-2 text-base text-white/55">
-            Upload your CV, add your LinkedIn export, paste a job offer — get a tailored PDF back in seconds.
+            Upload your CV, add your LinkedIn export, paste a job offer and get a tailored PDF back in seconds.
           </p>
         </header>
 

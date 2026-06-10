@@ -72,7 +72,7 @@ export function Hero() {
           className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/55 sm:text-lg"
         >
           Upload your CV once. Paste any job offer. Get a perfectly tailored PDF
-          that mirrors the role&apos;s keywords — without inventing a single
+          that mirrors the role&apos;s keywords, without inventing a single
           line of experience.
         </motion.p>
 

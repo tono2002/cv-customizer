@@ -29,7 +29,7 @@ export function CVPreview({ pdfBase64, mode, onDownloadAgain, onGenerateAgain }:
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <h2 className="text-sm font-semibold text-white">
-          {isCoverLetter ? "Cover letter downloaded — here's a preview" : "CV downloaded — here's a preview"}
+          {isCoverLetter ? "Cover letter downloaded. Here's a preview" : "CV downloaded. Here's a preview"}
         </h2>
       </div>
 
