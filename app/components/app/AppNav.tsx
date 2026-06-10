@@ -64,7 +64,7 @@ export function AppNav({ userEmail }: AppNavProps) {
     >
       <div className="h-full max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
         {/* Left: Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0 opacity-90 hover:opacity-100 transition-opacity duration-150">
           <span className="text-base sm:text-lg font-bold gradient-text">CV Customizer</span>
         </Link>
 
@@ -77,10 +77,10 @@ export function AppNav({ userEmail }: AppNavProps) {
                 key={item.href}
                 href={item.href}
                 className={[
-                  "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors",
+                  "flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-all duration-150",
                   active
-                    ? "bg-white/10 text-white"
-                    : "text-white/55 hover:text-white hover:bg-white/5",
+                    ? "bg-white/10 text-white shadow-[0_0_12px_rgba(139,92,246,0.15)]"
+                    : "text-white/55 hover:text-white hover:bg-white/8 hover:scale-[1.03] active:scale-[0.97]",
                 ].join(" ")}
               >
                 <span className={active ? "text-indigo-300" : "text-white/40"}>{item.icon}</span>
@@ -104,7 +104,7 @@ export function AppNav({ userEmail }: AppNavProps) {
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden text-white/70 hover:text-white border border-white/10 rounded-lg p-1.5 transition-colors"
+            className="btn-glass md:hidden text-white/70 hover:text-white border border-white/10 bg-white/[0.03] rounded-lg p-1.5"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileOpen}
           >

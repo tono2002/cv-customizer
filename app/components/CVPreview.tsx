@@ -51,7 +51,7 @@ export function CVPreview({ pdfBase64, mode, onDownloadAgain, onGenerateAgain }:
         <button
           type="button"
           onClick={onDownloadAgain}
-          className="flex-1 rounded-xl border border-white/10 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/70 hover:bg-white/10 hover:text-white active:scale-[0.98] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#05050F]"
+          className="btn-glass flex-1 rounded-xl border border-white/10 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white/70 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#05050F]"
         >
           Download again
         </button>

@@ -125,7 +125,7 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
                 type="button"
                 aria-label="Remove file"
                 onClick={(e) => { e.stopPropagation(); onFile(null); setWarning(null); }}
-                className="absolute top-2 right-2 rounded-full p-1 text-white/30 hover:text-white/60 hover:bg-white/10 transition-colors"
+                className="btn-glass absolute top-2 right-2 rounded-full p-1 border border-transparent text-white/30 hover:text-white/70"
               >
                 <XIcon />
               </button>
