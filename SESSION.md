@@ -184,13 +184,14 @@ Cost per generation: ~€0.04–0.07 (Sonnet 4.6 + Puppeteer).
 
 ## What's NOT done yet (planned)
 
-### High priority
-- [ ] **Stripe integration** — payment processing for Pro/Pro+ upgrades, webhook to update `profiles.plan`
-- [ ] **Monthly reset** — cron job or Supabase Edge Function to reset `generations_used` to 0 on the 1st of each month
-- [ ] **Upgrade prompt** — when user hits the limit, show an upgrade modal instead of a generic error
+### High priority — do these first, they unlock revenue
+- [ ] **Stripe integration** — payment processing for Pro/Pro+ upgrades, webhook to update `profiles.plan`. Without this nothing can be charged.
+- [ ] **Monthly reset** — Supabase Edge Function or pg_cron to reset `generations_used = 0` on the 1st of each month. Without this free users permanently run out.
+- [ ] **Upgrade prompt** — when user hits the generation limit, show a proper modal ("You've used your 3 free generations") with a Stripe checkout button instead of a raw error message.
+- [ ] **DOCX export** — offer both PDF and DOCX download after generation. DOCX is preferred by many ATS systems and recruiters. Use `html-to-docx` or `libreoffice` server-side. Make it a Pro-only unlock to add a concrete upgrade reason. Also reconsider the "Generate again" button UX — it currently just resets state; think about whether it should pre-fill the same job offer or truly start fresh.
+- [ ] **Accept DOCX as CV input** — users should be able to upload their CV as a .docx file (not just PDF). Requires server-side conversion to PDF (using LibreOffice or `mammoth` to extract text) before sending to Anthropic, or send the raw text extracted from the DOCX.
 
 ### Medium priority
-- [ ] **DOCX export** — Pro-only feature, convert generated HTML to .docx using `html-to-docx` or similar
 - [ ] **CV score** — keyword match % shown before/after generation (client-side, no extra API call)
 - [ ] **Generation history storage cleanup** — signed URLs expire after 7 days; need a strategy (refresh on access, or store permanently in Storage)
 - [ ] **Job offer URL scraping** — paste a LinkedIn/Indeed URL instead of the full text
