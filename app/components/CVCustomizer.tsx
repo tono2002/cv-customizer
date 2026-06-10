@@ -25,7 +25,7 @@ export function CVCustomizer() {
     if (!cvFile) return;
     setStatus("loading");
     setError(null);
-    setProgressStep(0);
+    setProgressStep(1);
     setPdfBase64(null);
 
     try {
@@ -149,7 +149,7 @@ export function CVCustomizer() {
             onClick={handleGenerate}
           />
 
-          {isLoading && progressStep > 0 && (
+          {isLoading && (
             <ProgressSteps currentStep={progressStep} />
           )}
 
