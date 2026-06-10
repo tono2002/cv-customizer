@@ -192,7 +192,7 @@ export function CVCustomizer() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="job-offer" className="text-sm font-medium text-gray-700">
+            <label htmlFor="job-offer" className="text-sm font-medium text-white/70">
               Job offer
             </label>
             <textarea
@@ -203,13 +203,13 @@ export function CVCustomizer() {
               onChange={(e) => setJobOffer(e.target.value)}
               disabled={isLoading}
               className={[
-                "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 resize-y transition-colors",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                isLoading ? "opacity-50 cursor-not-allowed" : "hover:border-gray-300",
+                "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/35 resize-y transition-colors",
+                "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent",
+                isLoading ? "opacity-50 cursor-not-allowed" : "hover:border-white/20",
               ].join(" ")}
             />
             {!canGenerate && jobOffer.length > 0 && jobOffer.trim().length < 10 && (
-              <p className="text-xs text-amber-600">Please paste a more complete job description.</p>
+              <p className="text-xs text-amber-400">Please paste a more complete job description.</p>
             )}
           </div>
 
@@ -226,7 +226,7 @@ export function CVCustomizer() {
           {isLoading && <ProgressSteps currentStep={progressStep} />}
 
           {!cvFile && !isLoading && !profileLoading && (
-            <p className="text-center text-xs text-gray-400">
+            <p className="text-center text-xs text-white/40">
               Upload your CV and paste a job offer to get started.
             </p>
           )}

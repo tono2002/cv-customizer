@@ -34,7 +34,7 @@ export function ModeToggle({ mode, onChange, disabled }: Props) {
     <div
       role="group"
       aria-label="Generation mode"
-      className="flex rounded-xl border border-gray-200 bg-gray-100 p-1 gap-1"
+      className="flex rounded-xl border border-white/10 bg-white/5 p-1 gap-1"
     >
       {OPTIONS.map((opt) => {
         const isActive = mode === opt.value;
@@ -48,10 +48,10 @@ export function ModeToggle({ mode, onChange, disabled }: Props) {
             onClick={() => onChange(opt.value)}
             className={[
               "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1",
               isActive
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700",
+                ? "bg-white/10 text-white shadow-sm"
+                : "text-white/40 hover:text-white/70",
               disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
             ].join(" ")}
           >

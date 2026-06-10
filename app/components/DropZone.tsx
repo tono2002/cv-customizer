@@ -74,9 +74,9 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</label>
+        <label htmlFor={id} className="text-sm font-medium text-white/70">{label}</label>
         {savedToProfile && (
-          <span className="text-xs text-blue-600 font-medium">Saved to profile</span>
+          <span className="text-xs text-cyan-400 font-medium">Saved to profile</span>
         )}
       </div>
 
@@ -92,14 +92,14 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
         onKeyDown={handleKeyDown}
         className={[
           "relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-8 text-center transition-all duration-150 cursor-pointer",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#05050F]",
           disabled
-            ? "cursor-not-allowed opacity-50 border-gray-200 bg-gray-50"
+            ? "cursor-not-allowed opacity-50 border-white/10 bg-white/[0.03]"
             : dragOver
-            ? "border-blue-400 bg-blue-50 scale-[1.01]"
+            ? "border-indigo-500/60 bg-indigo-500/10 scale-[1.01]"
             : file
-            ? "border-green-400 bg-green-50"
-            : "border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100",
+            ? "border-emerald-500/60 bg-emerald-500/10"
+            : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]",
         ].join(" ")}
       >
         <input
@@ -117,15 +117,15 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
           <>
             <CheckIcon />
             <div>
-              <p className="text-sm font-medium text-green-700 truncate max-w-[200px]">{file.name}</p>
-              <p className="text-xs text-green-600">{(file.sizeBytes / 1024).toFixed(0)} KB</p>
+              <p className="text-sm font-medium text-emerald-400 truncate max-w-[200px]">{file.name}</p>
+              <p className="text-xs text-emerald-400/70">{(file.sizeBytes / 1024).toFixed(0)} KB</p>
             </div>
             {!disabled && (
               <button
                 type="button"
                 aria-label="Remove file"
                 onClick={(e) => { e.stopPropagation(); onFile(null); setWarning(null); }}
-                className="absolute top-2 right-2 rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+                className="absolute top-2 right-2 rounded-full p-1 text-white/30 hover:text-white/60 hover:bg-white/10 transition-colors"
               >
                 <XIcon />
               </button>
@@ -135,23 +135,23 @@ export function DropZone({ id, label, hint, file, onFile, disabled, savedToProfi
           <>
             <UploadIcon />
             <div>
-              <p className="text-sm text-gray-600">
-                Drop PDF here or <span className="text-blue-600 font-medium">browse</span>
+              <p className="text-sm text-white/50">
+                Drop PDF here or <span className="text-indigo-400 font-medium">browse</span>
               </p>
             </div>
           </>
         )}
       </div>
 
-      {hint && <p className="text-xs text-gray-500">{hint}</p>}
-      {warning && <p className="text-xs text-amber-600" role="alert">{warning}</p>}
+      {hint && <p className="text-xs text-white/40">{hint}</p>}
+      {warning && <p className="text-xs text-amber-400" role="alert">{warning}</p>}
     </div>
   );
 }
 
 function UploadIcon() {
   return (
-    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
     </svg>
   );
@@ -159,7 +159,7 @@ function UploadIcon() {
 
 function CheckIcon() {
   return (
-    <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   );

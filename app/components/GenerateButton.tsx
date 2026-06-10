@@ -7,6 +7,8 @@ interface Props {
 }
 
 export function GenerateButton({ disabled, loading, onClick }: Props) {
+  const isInactive = disabled && !loading;
+
   return (
     <button
       type="button"
@@ -14,11 +16,11 @@ export function GenerateButton({ disabled, loading, onClick }: Props) {
       disabled={disabled || loading}
       aria-busy={loading}
       className={[
-        "w-full rounded-xl px-6 py-3.5 text-sm font-semibold text-white transition-all duration-150",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
-        disabled || loading
-          ? "bg-gray-300 cursor-not-allowed"
-          : "bg-blue-600 hover:bg-blue-700 active:scale-[0.98] shadow-sm hover:shadow-md",
+        "w-full rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-150",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#05050F]",
+        isInactive
+          ? "bg-white/10 text-white/30 cursor-not-allowed"
+          : "btn-gradient text-white active:scale-[0.98]",
       ].join(" ")}
     >
       {loading ? (

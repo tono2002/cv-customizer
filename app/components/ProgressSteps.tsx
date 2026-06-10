@@ -26,7 +26,7 @@ export function ProgressSteps({ currentStep }: Props) {
             <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
               {isDone && (
                 <svg
-                  className="w-5 h-5 text-blue-500"
+                  className="w-5 h-5 text-indigo-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -42,13 +42,13 @@ export function ProgressSteps({ currentStep }: Props) {
               )}
               {isActive && (
                 <span
-                  className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"
+                  className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse"
                   aria-hidden="true"
                 />
               )}
               {isPending && (
                 <span
-                  className="w-3 h-3 rounded-full border-2 border-gray-300"
+                  className="w-3 h-3 rounded-full border-2 border-white/20"
                   aria-hidden="true"
                 />
               )}
@@ -58,9 +58,9 @@ export function ProgressSteps({ currentStep }: Props) {
             <span
               className={[
                 "text-sm transition-colors duration-300",
-                isDone ? "text-gray-400 line-through" : "",
-                isActive ? "text-gray-900 font-medium" : "",
-                isPending ? "text-gray-400" : "",
+                isDone ? "text-white/40 line-through" : "",
+                isActive ? "text-white font-medium" : "",
+                isPending ? "text-white/30" : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
