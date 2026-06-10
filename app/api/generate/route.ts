@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { GenerateRequestSchema } from "@/lib/types";
+import type { StreamEvent } from "@/lib/types";
 import { generateTailoredCV } from "@/lib/anthropic";
 import { renderHtmlToPdf } from "@/lib/pdf";
 
@@ -18,41 +19,48 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Validation failed", details }, { status: 400 });
   }
 
-  try {
-    const html = await generateTailoredCV(parsed.data);
-    const pdfBuffer = await renderHtmlToPdf(html);
+  const encoder = new TextEncoder();
 
-    return new NextResponse(new Uint8Array(pdfBuffer), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="tailored-cv.pdf"',
-        "Content-Length": pdfBuffer.length.toString(),
-      },
-    });
-  } catch (err) {
-    console.error("[generate] Error:", err);
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (event: StreamEvent) =>
+        controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
 
-    if (err instanceof Anthropic.RateLimitError) {
-      return NextResponse.json(
-        { ok: false, error: "Rate limit reached. Please wait a moment and try again." },
-        { status: 429 }
-      );
-    }
-    if (err instanceof Anthropic.AuthenticationError) {
-      return NextResponse.json(
-        { ok: false, error: "Invalid API key. Check your ANTHROPIC_API_KEY." },
-        { status: 401 }
-      );
-    }
-    if (err instanceof Anthropic.APIError) {
-      return NextResponse.json(
-        { ok: false, error: `Anthropic API error: ${err.message}` },
-        { status: 502 }
-      );
-    }
+      try {
+        send({ type: "progress", step: 1, message: "Analysing your CV and job offer…" });
 
-    const message = err instanceof Error ? err.message : "An unexpected error occurred";
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
-  }
+        send({ type: "progress", step: 2, message: "Tailoring content to the job offer…" });
+        const html = await generateTailoredCV(parsed.data);
+
+        send({ type: "progress", step: 3, message: "Rendering PDF…" });
+        const pdfBuffer = await renderHtmlToPdf(html);
+
+        send({ type: "done", pdf: Buffer.from(pdfBuffer).toString("base64") });
+      } catch (err) {
+        console.error("[generate] Error:", err);
+
+        let errorMessage = "An unexpected error occurred";
+        if (err instanceof Anthropic.RateLimitError) {
+          errorMessage = "Rate limit reached. Please wait a moment and try again.";
+        } else if (err instanceof Anthropic.AuthenticationError) {
+          errorMessage = "Invalid API key. Check your ANTHROPIC_API_KEY.";
+        } else if (err instanceof Anthropic.APIError) {
+          errorMessage = `Anthropic API error: ${err.message}`;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+
+        send({ type: "error", error: errorMessage });
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "application/x-ndjson",
+      "Cache-Control": "no-cache",
+    },
+  });
 }
