@@ -23,21 +23,27 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");
-  const isApiRoute = request.nextUrl.pathname.startsWith("/api");
+  const pathname = request.nextUrl.pathname;
+  const isAuthRoute = pathname.startsWith("/auth");
+  const isApiRoute = pathname.startsWith("/api");
+  const isAppRoute = pathname === "/app" || pathname.startsWith("/app/");
 
-  if (!user && !isAuthRoute && !isApiRoute) {
+  // Protected app routes: redirect to login when not authed
+  if (!user && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
+  // Authed user hitting an auth page → send to app
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/app";
     return NextResponse.redirect(url);
   }
 
+  // Everything else (landing, api, public assets) passes through
+  void isApiRoute;
   return supabaseResponse;
 }
 
