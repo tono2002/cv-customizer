@@ -23,16 +23,22 @@ export function Pricing() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   const freeFeatures = [
-    "5 generations / month",
+    "3 generations / month",
     "CV tailoring",
     "Cover letter mode",
     "Profile storage",
   ];
   const proFeatures = [
-    "Unlimited generations",
+    "50 generations / month",
     "Everything in Free",
     "DOCX export (coming soon)",
     "Priority processing",
+  ];
+  const proPlusFeatures = [
+    "200 generations / month",
+    "Everything in Pro",
+    "For recruiters & coaches",
+    "Dedicated support",
   ];
 
   return (
@@ -54,7 +60,7 @@ export function Pricing() {
           </h2>
         </motion.div>
 
-        <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch">
+        <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3 md:items-stretch">
           {/* Free */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -132,6 +138,49 @@ export function Pricing() {
               className="btn-gradient mt-8 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-6 py-3 text-sm font-semibold text-white"
             >
               Go Pro
+              <span aria-hidden>→</span>
+            </Link>
+          </motion.div>
+
+          {/* Pro+ */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.55, delay: 0.26 }}
+            whileHover={{ scale: 1.015 }}
+            className="gradient-border flex flex-col p-8"
+          >
+            <div className="flex items-start justify-between">
+              <h3 className="text-sm font-medium uppercase tracking-wider text-white/60">
+                Pro+
+              </h3>
+              <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
+                Power user
+              </span>
+            </div>
+
+            <p className="mt-4 flex items-baseline gap-1">
+              <span className="gradient-text text-5xl font-bold tracking-tight">€24.99</span>
+              <span className="text-sm text-white/45">/ month</span>
+            </p>
+            <p className="mt-3 text-sm text-white/55">
+              For recruiters &amp; coaches managing many candidates.
+            </p>
+
+            <ul className="mt-7 space-y-3.5 text-sm text-white/85">
+              {proPlusFeatures.map((f) => (
+                <li key={f} className="flex items-center gap-3">
+                  <Check />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              href="/auth/signup"
+              className="btn-gradient mt-8 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-6 py-3 text-sm font-semibold text-white"
+            >
+              Go Pro+
               <span aria-hidden>→</span>
             </Link>
           </motion.div>

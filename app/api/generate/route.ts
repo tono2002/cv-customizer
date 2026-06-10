@@ -4,6 +4,10 @@ import { GenerateRequestSchema } from "@/lib/types";
 import type { StreamEvent } from "@/lib/types";
 import { generateTailoredCV } from "@/lib/anthropic";
 import { renderHtmlToPdf } from "@/lib/pdf";
+import { createClient } from "@/lib/supabase/server";
+
+const FREE_LIMIT = 3;
+const PRO_LIMIT = 50;
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -17,6 +21,42 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     const details = parsed.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join("; ");
     return NextResponse.json({ ok: false, error: "Validation failed", details }, { status: 400 });
+  }
+
+  // Authenticate and enforce plan limits BEFORE the stream begins
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan, generations_used")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const plan = ((profile?.plan as string | null) ?? "free").toLowerCase();
+  const used = (profile?.generations_used as number | null) ?? 0;
+
+  if (plan === "free" && used >= FREE_LIMIT) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "You've used all 3 free generations this month. Upgrade to Pro to continue.",
+      },
+      { status: 429 }
+    );
+  }
+
+  if (plan === "pro" && used >= PRO_LIMIT) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "You've reached your 50 generation limit this month. Upgrade to Pro+ for more.",
+      },
+      { status: 429 }
+    );
   }
 
   const encoder = new TextEncoder();

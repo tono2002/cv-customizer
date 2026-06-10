@@ -1,30 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-
-type GenerationRow = {
-  id: string;
-  type: "cv" | "cover-letter" | string;
-  job_offer_snippet: string | null;
-  created_at: string;
-};
+import { GenerationList, type GenerationRow } from "@/app/components/app/GenerationList";
 
 type ProfileRow = {
   plan: "free" | "pro" | string | null;
   generations_used: number | null;
   generations_reset_at: string | null;
 };
-
-function timeAgo(date: string): string {
-  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-}
 
 function firstNameFromEmail(email: string | null | undefined): string {
   if (!email) return "there";
@@ -35,7 +17,20 @@ function firstNameFromEmail(email: string | null | undefined): string {
   return first.charAt(0).toUpperCase() + first.slice(1);
 }
 
-const FREE_LIMIT = 5;
+function SparkleIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+      />
+    </svg>
+  );
+}
+
+const FREE_LIMIT = 3;
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -67,7 +62,7 @@ export default async function DashboardPage() {
   if (user) {
     const { data } = await supabase
       .from("generations")
-      .select("id, type, job_offer_snippet, created_at")
+      .select("id, type, job_offer_snippet, created_at, company_name, pdf_url")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(10);
@@ -85,11 +80,19 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
       {/* Welcome section */}
-      <section className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-white">
-          Welcome back, <span className="gradient-text">{greetingName}</span>
-        </h1>
-        <p className="mt-1.5 text-sm text-white/55">Here&apos;s your generation activity</p>
+      <section className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">
+            Welcome back, <span className="gradient-text">{greetingName}</span>
+          </h1>
+          <p className="mt-1.5 text-sm text-white/55">Here&apos;s your generation activity</p>
+        </div>
+        <Link
+          href="/app/generate"
+          className="btn-shine inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white self-start"
+        >
+          <SparkleIcon /> New Generation
+        </Link>
       </section>
 
       {/* Stats row */}
@@ -179,40 +182,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <ul className="flex flex-col gap-2">
-            {recent.map((gen) => {
-              const isCv = gen.type === "cv";
-              const snippetRaw = gen.job_offer_snippet ?? "";
-              const snippet =
-                snippetRaw.length > 80 ? `${snippetRaw.slice(0, 80)}...` : snippetRaw || "—";
-              return (
-                <li
-                  key={gen.id}
-                  className="glass-card rounded-xl p-4 flex items-center gap-4 transition-colors hover:border-white/20"
-                  style={{ borderColor: undefined }}
-                >
-                  {/* Badge */}
-                  <span
-                    className={
-                      isCv
-                        ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0"
-                        : "bg-violet-500/20 text-violet-300 border border-violet-500/30 rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0"
-                    }
-                  >
-                    {isCv ? "CV" : "Cover Letter"}
-                  </span>
-
-                  {/* Snippet */}
-                  <p className="flex-1 text-sm text-white/70 truncate">{snippet}</p>
-
-                  {/* Time */}
-                  <span className="text-xs text-white/40 shrink-0 hidden sm:block">
-                    {timeAgo(gen.created_at)}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+          <GenerationList generations={recent} />
         )}
       </section>
 

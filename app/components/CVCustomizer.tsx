@@ -7,6 +7,7 @@ import { ModeToggle } from "./ModeToggle";
 import { ProgressSteps } from "./ProgressSteps";
 import { CVPreview } from "./CVPreview";
 import { ErrorBanner } from "./ErrorBanner";
+import { createClient } from "@/lib/supabase/client";
 import type { UploadedFile, GenerateErrorResponse, StreamEvent, Mode } from "@/lib/types";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -39,6 +40,58 @@ async function base64FromUrl(url: string): Promise<string> {
   let binary = "";
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
   return btoa(binary);
+}
+
+function extractCompanyName(jobOffer: string): string {
+  const text = jobOffer.slice(0, 600);
+  const patterns = [
+    /about(?:\s+the\s+(?:job|role|position)\s+at|\s+)\s*([A-Z][A-Za-z0-9\s&.,'-]{1,40}?)(?:\n|,\s|\.\s)/i,
+    /^([A-Z][A-Za-z0-9\s&.,'-]{1,40}?)\s+(?:is\s+hiring|is\s+looking|is\s+seeking)/im,
+    /join\s+([A-Z][A-Za-z0-9\s&.,'-]{1,40}?)(?:\s+as|\s+and|\s+to|[,.\n])/i,
+    /\bat\s+([A-Z][A-Za-z0-9\s&.,'-]{2,35}?)(?:[,.\n]|\s+(?:we|our|is|are|has))/,
+  ];
+  for (const re of patterns) {
+    const m = text.match(re);
+    if (m?.[1]) return m[1].trim().replace(/[,.\s]+$/, "");
+  }
+  const firstLine = jobOffer.split("\n").find(l => l.trim().length > 2)?.trim() ?? "";
+  const cap = firstLine.match(/^([A-Z][A-Za-z0-9\s&.,'-]{2,40})/);
+  if (cap?.[1]) return cap[1].trim().replace(/[,.\s]+$/, "");
+  return "Unknown Company";
+}
+
+async function saveGeneration(pdf: string, mode: Mode, jobOffer: string) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const companyName = extractCompanyName(jobOffer);
+
+  const bytes = Uint8Array.from(atob(pdf), c => c.charCodeAt(0));
+  const path = `${user.id}/generations/${Date.now()}.pdf`;
+  let pdfUrl: string | null = null;
+
+  const { error: uploadError } = await supabase.storage
+    .from("cv-files")
+    .upload(path, bytes, { contentType: "application/pdf", upsert: false });
+
+  if (!uploadError) {
+    const { data: signed } = await supabase.storage
+      .from("cv-files")
+      .createSignedUrl(path, 604800);
+    pdfUrl = signed?.signedUrl ?? null;
+  }
+
+  await fetch("/api/generations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: mode,
+      jobOfferSnippet: jobOffer.trim().slice(0, 80),
+      companyName,
+      pdfUrl,
+    }),
+  });
 }
 
 export function CVCustomizer() {
@@ -143,17 +196,7 @@ export function CVCustomizer() {
             triggerDownload(event.pdf, filename);
             setPdfBase64(event.pdf);
             setStatus("success");
-            // Fire-and-forget: record the generation for the dashboard
-            void fetch("/api/generations", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                type: mode,
-                jobOfferSnippet: jobOffer.trim().slice(0, 80),
-              }),
-            }).catch(() => {
-              // Non-fatal — dashboard activity is best-effort
-            });
+            saveGeneration(event.pdf, mode, jobOffer).catch(() => {});
           } else if (event.type === "error") {
             setError({ message: event.error, details: event.details });
             setStatus("error");

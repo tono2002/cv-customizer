@@ -71,6 +71,19 @@ export function AppNav({ userEmail }: AppNavProps) {
         {/* Center: Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
+            const isNewGen = item.href === "/app/generate";
+            if (isNewGen) {
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="btn-shine flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold text-white"
+                >
+                  <span>{item.icon}</span>
+                  {item.label}
+                </Link>
+              );
+            }
             const active = isActive(pathname ?? "", item.href);
             return (
               <Link

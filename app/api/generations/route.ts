@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 type PostBody = {
   type?: "cv" | "cover-letter";
   jobOfferSnippet?: string;
+  companyName?: string;
+  pdfUrl?: string;
 };
 
 export async function POST(req: NextRequest) {
@@ -20,6 +22,8 @@ export async function POST(req: NextRequest) {
 
   const type = body.type;
   const snippet = (body.jobOfferSnippet ?? "").slice(0, 80);
+  const companyName = body.companyName;
+  const pdfUrl = body.pdfUrl;
 
   if (type !== "cv" && type !== "cover-letter") {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
@@ -30,6 +34,8 @@ export async function POST(req: NextRequest) {
     user_id: user.id,
     type,
     job_offer_snippet: snippet,
+    company_name: companyName ?? null,
+    pdf_url: pdfUrl ?? null,
   });
 
   if (insertError) {
