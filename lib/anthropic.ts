@@ -33,7 +33,9 @@ OUTPUT RULES:
 - All CSS must be in a single <style> tag inside <head>. No external stylesheets except Google Fonts via @import.
 - Use web-safe fonts or Google Fonts imported via CSS @import (not <link> tags).
 - Replicate the original CV's layout, section order, fonts, colors, and spacing as closely as possible.
-- Maintain the SAME LENGTH as the original: if the original is one page, output must be one page. Match approximate word count and bullet count per section so nothing overflows.
+- PAGE LENGTH: the output must be exactly the same number of pages as the original. If the original is one page, the output must be one page — no overflow, no second page.
+- PROPORTIONAL CONTENT: count the bullets and approximate word count in each section of the original. The rewritten section must have the exact same number of bullets and roughly the same word count. Do not add extra bullets or expand sentences — only swap and rephrase words to match the job offer keywords. If a section has 5 bullets in the original, it must have 5 bullets in the output.
+- FONT SIZE & SPACING: do not reduce font size or line-height to force content to fit. If content would overflow, shorten the rewritten text instead — cut words, not font size.
 - Detect the page size from the CV (A4 vs US Letter). Default to A4 if uncertain.
 - Set page dimensions in CSS using @page and body styles so the output prints/renders to exactly one page.
 - For @page: use size A4 (210mm 297mm) or Letter (8.5in 11in) with zero margins, and set print-color-adjust: exact.
