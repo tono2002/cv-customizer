@@ -11,7 +11,7 @@ function getClient(): Anthropic {
 export const MODEL_ID = "claude-sonnet-4-6";
 const MAX_TOKENS = 6000;
 
-const SYSTEM_PROMPT = `You are an expert CV writer and front-end designer. Your task is to produce a tailored CV as a single, complete, self-contained HTML document.
+const CV_SYSTEM_PROMPT = `You are an expert CV writer and front-end designer. Your task is to produce a tailored CV as a single, complete, self-contained HTML document.
 
 PROCESS:
 1. Carefully examine the provided CV PDF to infer the exact visual design: layout (single/double column, sidebar), section order, fonts, colors, spacing, approximate word count per section, and bullet count per role.
@@ -44,6 +44,34 @@ OUTPUT RULES:
 - SECTION NAMES: copy every section heading character-for-character from the original (e.g. "PROFESSIONAL EXPERIENCE", "EDUCATION", "MAJOR PROJECTS"). Never rename, reword, merge, or reorder sections.
 - Only the prose content inside each section changes — dates, headings, section order, and structural layout are frozen.`;
 
+const COVER_LETTER_SYSTEM_PROMPT = `You are an expert career coach and front-end designer. Your task is to write a compelling, personalised cover letter and return it as a single, complete, self-contained HTML document.
+
+PROCESS:
+1. Read the CV PDF and LinkedIn PDF (if provided) to extract the candidate's real background: name, contact details, current role, employer, key achievements, skills, and education. Only use what is explicitly stated — never invent or infer details.
+2. Read the job offer carefully. Identify: the company name, the role title, the top 3–5 skills/competencies they value most, and any cultural signals (mission, values, tone).
+3. Write a one-page cover letter that:
+   - Opens with a strong, specific hook that references the company's mission or a concrete reason the candidate wants this role.
+   - In 2–3 body paragraphs, connects the candidate's real experience and achievements directly to the role's requirements. Mirror the job offer's terminology where it truthfully applies.
+   - Closes with a confident, concise call to action.
+   - Never invents experience, metrics, employers, or qualifications. If a detail is absent from the CV and LinkedIn, omit it.
+   - Maintains a professional yet warm tone that matches the company's culture as inferred from the job offer.
+
+LETTER STRUCTURE:
+- Candidate name and contact info at the top (copied exactly from CV)
+- Date: write today's date
+- Hiring Manager salutation (use "Dear Hiring Team," if no specific name is available)
+- 3–4 paragraphs of body text
+- Professional closing (e.g. "Yours sincerely,") followed by the candidate's name
+
+OUTPUT RULES:
+- Return ONLY a raw, complete HTML document. No markdown fences, no commentary, no explanation before or after.
+- All CSS must be in a single <style> tag inside <head>. No external stylesheets except Google Fonts via @import.
+- Use clean, professional typography — match the font family used in the CV if possible, otherwise default to Georgia or a clean sans-serif via Google Fonts.
+- The letter must fit exactly one A4 page (210mm × 297mm). Use @page { size: A4; margin: 0; } and set print-color-adjust: exact.
+- Body padding should replicate standard business letter margins (~2.5cm on each side).
+- Font size 11–12pt, line-height 1.6, black text on white background.
+- Keep total word count between 280–350 words so it fits comfortably on one page without shrinking fonts.`;
+
 interface DocumentBlock {
   type: "document";
   source: { type: "base64"; media_type: "application/pdf"; data: string };
@@ -59,6 +87,8 @@ interface TextBlock {
 type ContentBlock = DocumentBlock | TextBlock;
 
 export async function generateTailoredCV(request: GenerateRequest): Promise<string> {
+  const isCoverLetter = request.mode === "cover-letter";
+
   const content: ContentBlock[] = [
     {
       type: "document",
@@ -103,7 +133,7 @@ export async function generateTailoredCV(request: GenerateRequest): Promise<stri
     system: [
       {
         type: "text",
-        text: SYSTEM_PROMPT,
+        text: isCoverLetter ? COVER_LETTER_SYSTEM_PROMPT : CV_SYSTEM_PROMPT,
         cache_control: { type: "ephemeral" },
       },
     ],

@@ -11,7 +11,10 @@ export const GenerateRequestSchema = z.object({
   linkedinBase64: z.string().optional(),
   linkedinMediaType: z.literal("application/pdf").optional(),
   jobOffer: z.string().min(10, "Job offer must be at least 10 characters"),
+  mode: z.enum(["cv", "cover-letter"]).default("cv"),
 });
+
+export type Mode = "cv" | "cover-letter";
 
 export type GenerateRequest = z.infer<typeof GenerateRequestSchema>;
 

@@ -3,10 +3,11 @@
 import { useState, useCallback } from "react";
 import { DropZone } from "./DropZone";
 import { GenerateButton } from "./GenerateButton";
+import { ModeToggle } from "./ModeToggle";
 import { ProgressSteps } from "./ProgressSteps";
 import { CVPreview } from "./CVPreview";
 import { ErrorBanner } from "./ErrorBanner";
-import type { UploadedFile, GenerateErrorResponse, StreamEvent } from "@/lib/types";
+import type { UploadedFile, GenerateErrorResponse, StreamEvent, Mode } from "@/lib/types";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -27,6 +28,7 @@ export function CVCustomizer() {
   const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
   const [linkedinFile, setLinkedinFile] = useState<UploadedFile | null>(null);
   const [jobOffer, setJobOffer] = useState("");
+  const [mode, setMode] = useState<Mode>("cv");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<{ message: string; details?: string } | null>(null);
   const [progressStep, setProgressStep] = useState<number>(0);
@@ -49,6 +51,7 @@ export function CVCustomizer() {
           ? { linkedinBase64: linkedinFile.base64, linkedinMediaType: linkedinFile.mediaType }
           : {}),
         jobOffer: jobOffer.trim(),
+        mode,
       };
 
       const res = await fetch("/api/generate", {
@@ -82,8 +85,8 @@ export function CVCustomizer() {
           if (event.type === "progress") {
             setProgressStep(event.step);
           } else if (event.type === "done") {
-            // Auto-download immediately — don't make the user click a button
-            triggerDownload(event.pdf, "tailored-cv.pdf");
+            const filename = mode === "cover-letter" ? "cover-letter.pdf" : "tailored-cv.pdf";
+            triggerDownload(event.pdf, filename);
             setPdfBase64(event.pdf);
             setStatus("success");
           } else if (event.type === "error") {
@@ -112,6 +115,8 @@ export function CVCustomizer() {
     <div className="flex flex-col gap-6">
       {status !== "success" && (
         <>
+          <ModeToggle mode={mode} onChange={setMode} disabled={isLoading} />
+
           <div className="grid gap-5 sm:grid-cols-2">
             <DropZone
               id="cv-upload"
@@ -175,7 +180,8 @@ export function CVCustomizer() {
       {status === "success" && pdfBase64 && (
         <CVPreview
           pdfBase64={pdfBase64}
-          onDownloadAgain={() => triggerDownload(pdfBase64, "tailored-cv.pdf")}
+          mode={mode}
+          onDownloadAgain={() => triggerDownload(pdfBase64, mode === "cover-letter" ? "cover-letter.pdf" : "tailored-cv.pdf")}
           onGenerateAgain={handleGenerateAgain}
         />
       )}

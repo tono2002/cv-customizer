@@ -1,14 +1,17 @@
 "use client";
 
 import { useMemo, useEffect } from "react";
+import type { Mode } from "@/lib/types";
 
 interface Props {
   pdfBase64: string;
+  mode: Mode;
   onDownloadAgain: () => void;
   onGenerateAgain: () => void;
 }
 
-export function CVPreview({ pdfBase64, onDownloadAgain, onGenerateAgain }: Props) {
+export function CVPreview({ pdfBase64, mode, onDownloadAgain, onGenerateAgain }: Props) {
+  const isCoverLetter = mode === "cover-letter";
   const blobUrl = useMemo(() => {
     const bytes = Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0));
     const blob = new Blob([bytes], { type: "application/pdf" });
@@ -25,7 +28,9 @@ export function CVPreview({ pdfBase64, onDownloadAgain, onGenerateAgain }: Props
         <svg className="h-5 w-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h2 className="text-sm font-semibold text-gray-900">Downloaded — here&apos;s a preview</h2>
+        <h2 className="text-sm font-semibold text-gray-900">
+          {isCoverLetter ? "Cover letter downloaded — here's a preview" : "CV downloaded — here's a preview"}
+        </h2>
       </div>
 
       <div className="w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-100">
@@ -34,7 +39,7 @@ export function CVPreview({ pdfBase64, onDownloadAgain, onGenerateAgain }: Props
           title="CV preview"
           className="w-full"
           style={{ height: "842px" }}
-          aria-label="PDF preview of your tailored CV"
+          aria-label={isCoverLetter ? "PDF preview of your cover letter" : "PDF preview of your tailored CV"}
         />
       </div>
 
