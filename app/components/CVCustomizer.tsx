@@ -143,6 +143,17 @@ export function CVCustomizer() {
             triggerDownload(event.pdf, filename);
             setPdfBase64(event.pdf);
             setStatus("success");
+            // Fire-and-forget: record the generation for the dashboard
+            void fetch("/api/generations", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                type: mode,
+                jobOfferSnippet: jobOffer.trim().slice(0, 80),
+              }),
+            }).catch(() => {
+              // Non-fatal — dashboard activity is best-effort
+            });
           } else if (event.type === "error") {
             setError({ message: event.error, details: event.details });
             setStatus("error");
