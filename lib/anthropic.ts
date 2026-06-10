@@ -8,8 +8,8 @@ function getClient(): Anthropic {
   return new Anthropic({ apiKey: key });
 }
 
-export const MODEL_ID = "claude-opus-4-8";
-const MAX_TOKENS = 16000;
+export const MODEL_ID = "claude-sonnet-4-6";
+const MAX_TOKENS = 6000;
 
 const SYSTEM_PROMPT = `You are an expert CV writer and front-end designer. Your task is to produce a tailored CV as a single, complete, self-contained HTML document.
 
@@ -100,8 +100,13 @@ export async function generateTailoredCV(request: GenerateRequest): Promise<stri
   const response = await (anthropic.messages.create as any)({
     model: MODEL_ID,
     max_tokens: MAX_TOKENS,
-    thinking: { type: "adaptive" },
-    system: SYSTEM_PROMPT,
+    system: [
+      {
+        type: "text",
+        text: SYSTEM_PROMPT,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
     messages,
   });
 
