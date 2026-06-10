@@ -42,6 +42,7 @@ OUTPUT RULES:
 - Structure the body with padding that matches the original CV's margins.
 - DATES: copy every date exactly as it appears in the original CV — including start month, start year, end month, end year, and any ranges (e.g. "OCTOBER 2024 - AUGUST 2025", "SEPTEMBER 2020 - JUNE 2024"). Never shorten, truncate, approximate, or reformat a date. If the original shows a range, the output must show the same range.
 - SECTION NAMES: copy every section heading character-for-character from the original (e.g. "PROFESSIONAL EXPERIENCE", "EDUCATION", "MAJOR PROJECTS"). Never rename, reword, merge, or reorder sections.
+- SECTION SPACING: add a small top margin (8–10pt) before every section heading so there is a clear visual breath between sections. The first section heading (directly under the contact info) needs no top margin. Do not add extra spacing anywhere else.
 - Only the prose content inside each section changes — dates, headings, section order, and structural layout are frozen.`;
 
 const COVER_LETTER_SYSTEM_PROMPT = `You are an expert career coach and front-end designer. Your task is to write a compelling, personalised cover letter and return it as a single, complete, self-contained HTML document.
