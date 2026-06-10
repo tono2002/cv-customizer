@@ -10,6 +10,19 @@ import type { UploadedFile, GenerateErrorResponse, StreamEvent } from "@/lib/typ
 
 type Status = "idle" | "loading" | "success" | "error";
 
+function triggerDownload(base64: string, filename: string) {
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const blob = new Blob([bytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function CVCustomizer() {
   const [cvFile, setCvFile] = useState<UploadedFile | null>(null);
   const [linkedinFile, setLinkedinFile] = useState<UploadedFile | null>(null);
@@ -44,7 +57,6 @@ export function CVCustomizer() {
         body: JSON.stringify(body),
       });
 
-      // Non-streaming error (e.g. 400 validation)
       if (!res.ok) {
         const json: GenerateErrorResponse = await res.json();
         setError({ message: json.error, details: json.details });
@@ -61,7 +73,7 @@ export function CVCustomizer() {
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
-        buffer = lines.pop()!; // keep incomplete last line
+        buffer = lines.pop()!;
 
         for (const line of lines) {
           if (!line.trim()) continue;
@@ -70,6 +82,8 @@ export function CVCustomizer() {
           if (event.type === "progress") {
             setProgressStep(event.step);
           } else if (event.type === "done") {
+            // Auto-download immediately — don't make the user click a button
+            triggerDownload(event.pdf, "tailored-cv.pdf");
             setPdfBase64(event.pdf);
             setStatus("success");
           } else if (event.type === "error") {
@@ -96,7 +110,6 @@ export function CVCustomizer() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Show the form and inputs only when not in success state */}
       {status !== "success" && (
         <>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -149,9 +162,7 @@ export function CVCustomizer() {
             onClick={handleGenerate}
           />
 
-          {isLoading && (
-            <ProgressSteps currentStep={progressStep} />
-          )}
+          {isLoading && <ProgressSteps currentStep={progressStep} />}
 
           {!cvFile && !isLoading && (
             <p className="text-center text-xs text-gray-400">
@@ -161,9 +172,12 @@ export function CVCustomizer() {
         </>
       )}
 
-      {/* Preview pane after successful generation */}
       {status === "success" && pdfBase64 && (
-        <CVPreview pdfBase64={pdfBase64} onGenerateAgain={handleGenerateAgain} />
+        <CVPreview
+          pdfBase64={pdfBase64}
+          onDownloadAgain={() => triggerDownload(pdfBase64, "tailored-cv.pdf")}
+          onGenerateAgain={handleGenerateAgain}
+        />
       )}
     </div>
   );
